@@ -2,6 +2,8 @@
 <head>
     <meta charset="UTF-8" />
     <h1>LOL Character List</h1>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 </head>
 <body>
     <ul>
@@ -12,6 +14,106 @@
         <% }) %>
     </ul>
     <br>
-    <a href="../LOLCharacterAdd">추가</a>
+    <a href="javascript:void(0);" onclick="ClickAdd();">추가</a>
+    <br>
+    <div id="loginForm">
+        <input type="text" id="id" placeholder="User ID">
+        <input type="password" id="password" placeholder="Password">
+        <input type="button" onclick="login()" value="Login">
+    </div>
+    <div id="logoutForm">
+        <input type="button" onclick="logout()" value="Logout">
+    </div>
+
+    <script>
+       var jwt = null;
+
+        $(document).ready(function () {
+            console.log('ready!');
+            jwt = window.sessionStorage.getItem("token");
+            console.log(jwt);
+            setLoginDisplay();
+        });
+
+        function login() {
+            const id = document.getElementById('id').value;
+            const password = document.getElementById('password').value;
+
+            console.log('id:',id,'password:',password);
+
+            if ( !id || !password ) {
+               console.log('no id, password');
+               return
+            }
+
+            fetch('/LOLCharacterLogin', {
+               method: 'POST',
+               headers: [["Content-Type", "application/json"]],
+               body: JSON.stringify({id, password})
+            })
+            .then(response => {
+               const statusCode = response.status;
+               if ( 200 != statusCode ) {
+                  alert("로그인 실패");
+                  return;
+               }
+               return response.json()
+            })
+            .then( data => {
+                console.log(data);
+                
+               const token = data.token;
+               console.log('login success. Token:', token);
+               
+               jwt = token;
+               window.sessionStorage.setItem("token", token);
+               setLoginDisplay();
+            })
+            .catch( error => {
+               console.error('login error :', error);
+            })
+
+         }         
+
+         function logout() {
+            // 토큰 제거
+            jwt = null;
+            window.sessionStorage.removeItem("token");
+            setLoginDisplay();
+         }
+
+         function setLoginDisplay() {
+             if(!jwt) {  //  토큰이 없는 경우. 로그인을 안 한 경우.
+                $('#loginForm').show();
+                $('#logoutForm').hide();
+            }
+             else { 
+                $('#loginForm').hide();
+                $('#logoutForm').show();
+            }
+         }
+
+         function ClickAdd() {
+            fetch('/tokenCheck', {
+               method: 'GET',
+               headers: [["Authorization", jwt]]
+            })
+            .then(response => {
+               const statusCode = response.status;
+               if ( 200 != statusCode ) {
+                   console.log('토큰 인증 실패, statusCode: ' + statusCode);
+                   alert("로그인이 필요한 기능입니다");
+               }
+               else {
+                  window.location.href = "../LOLCharacterAdd";
+               }
+            })
+            .catch( error => {
+               console.error('public info error :', error);
+            });
+
+            return returnValue;
+        }
+    </script>
 </body>
 </html>

@@ -2,6 +2,8 @@
 <head>
     <meta charset="UTF-8" />
     <h1>LOL Character Detail</h1>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 </head>
 <body>
     <form name="input" method="POST" action="../LOLCharacter/<%= data.id %>">
@@ -23,8 +25,77 @@
         </ul>
         <br>
             <input type="button" value="목록보기" onclick="location.href='http://localhost:3000/LOLCharacter'">
-            <input type="button" value="수정하기" onclick="location.href='http://localhost:3000/LOLCharacterUpdate/<%= data.id %>'">
-            <input type="submit" value="삭제">
+            <input type="button" value="수정하기" onclick="ClickUpdate('<%= data.id %>')">
+            <input type="button" value="삭제" onclick="ClickDelete('<%= data.id %>')">
     </form>  
+    <script>
+        var jwt = null;
+        $(document).ready(function () {
+            jwt = window.sessionStorage.getItem("token");
+            console.log(jwt);
+        });
+
+        function TokenCheck(callback) {
+            fetch('/tokenCheck', {
+               method: 'GET',
+               headers: [["Authorization", jwt]]
+            })
+            .then(response => {
+               const statusCode = response.status;
+               console.log(statusCode);
+               if ( 200 != statusCode ) {
+                   console.log('토큰 인증 실패, statusCode: ' + statusCode);
+                   callback(false);
+               }
+               else {
+                    callback(true);
+               }
+            })
+            .catch( error => {
+               console.error('public info error :', error);
+            });
+        }
+
+        function ClickUpdate(id) {
+            console.log("id : " + id);
+            TokenCheck((tokenCheck) => {
+                if(tokenCheck)
+                    window.location.href = "../LOLCharacterUpdate/" + id;
+                else
+                    alert("로그인이 필요한 기능입니다");
+            });
+            
+        }
+
+        function ClickDelete(id) {
+            const tokenCheck = TokenCheck((tokenCheck) => {
+                if(tokenCheck) {
+                    const url = "../LOLCharacter/" + id;
+                    fetch(url, {
+                            method: 'POST',
+                            headers: [["Authorization", jwt]]
+                        })
+                        .then(response => {
+                            const statusCode = response.status;
+                            console.log(statusCode);
+                            if ( 200 != statusCode ) {
+                                console.log('삭제 실패, statusCode: ' + statusCode);
+                                alert("삭제 실패");
+                            }
+                            else {  //  삭제 성공.
+                                window.location.href = "../LOLCharacter";   //  삭제 성공 후 전체 리스트로 전환.
+                            }
+                        })
+                        .catch( error => {
+                            console.error('public info error :', error);
+                            alert("삭제 실패");
+                        }
+                    );
+                }
+                else
+                    alert("삭제 토큰 인증 실패");
+            });
+        }
+    </script>
 </body>
 </html>

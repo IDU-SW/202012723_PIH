@@ -164,8 +164,10 @@ class LOLCharacter {
         try {
             let result = await Characters.destroy({where: {id:characterId}});
             console.log('Remove success :', characterId);
+            return result;
         } catch (error) {
             console.error(error);  
+            return null;
         }
     }
 }

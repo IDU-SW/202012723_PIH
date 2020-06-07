@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const characters = require('../model/LOLCharacterModel');
 
+const bodyParser = require('body-parser');
+const jwt = require('jsonwebtoken');
+
 const multer = require('multer');
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -13,6 +16,34 @@ const storage = multer.diskStorage({
   });
 const upload = multer({ storage : storage });
 
+const secretKey = 'Inhye23';
+
+const user = {
+    id : 'pih',
+    password : '202012723',
+    name : '박인혜',
+ }
+
+ function tokenVerifier(req, res, next) {
+    let token = req.headers['authorization'];
+    
+    if (token) {
+        console.log('token :', token);
+        jwt.verify(token, secretKey, (err, decoded) => {
+            if (decoded) {
+                req.user = decoded;
+                next();
+            }
+            else {
+                next({code: 401, msg: 'UnAuthorized'});
+            }            
+        });
+    }
+    else {
+        next({code: 401, msg: 'UnAuthorized'});
+    }    
+}
+
 router.get('/LOLCharacter', showCharacterList);
 router.get('/LOLCharacter/:characterId', showCharacterDetail);
 router.get('/LOLCharacterAdd', showAddForm);
@@ -21,7 +52,38 @@ router.post('/LOLCharacter', upload.single('thumbnail'), addCharacter);
 router.post('/LOLCharacterUpdate/:characterId', upload.single('thumbnail'), updateCharacter);
 router.post('/LOLCharacter/:characterId', deleteCharacter);
 
+router.get('/tokenCheck', tokenVerifier, sendProfile);
+router.post('/LOLCharacterLogin', handleLogin);
+
 module.exports = router;
+
+function handleLogin(req, res) {
+    const id = req.body.id;
+    const pw = req.body.password;
+
+    console.log('trying to login:', id, pw);
+
+    // 로그인 성공
+    if (id === user.id && pw === user.password) {
+        // 토큰 생성
+        const token = jwt.sign({ id: user.id, name: user.name }, secretKey);
+        console.log('Login Success :', token);
+
+        //res.render('CharacterList', { data:{ msg: 'success', token: token } });
+        res.send({ msg: 'success', token: token });
+    }
+    else {
+        res.sendStatus(401);
+    }
+}
+
+function sendProfile(req, res) {
+    const user = req.user;
+    const id = user.id;
+    const name = user.name;
+
+    res.send({id: user.id, name: user.name, photo: user.photo});
+};
 
 async function showCharacterList(req, res) {
     try {
@@ -125,7 +187,7 @@ async function deleteCharacter(req, res) {
     const id = req.params.characterId;
     try {
         const result = await characters.deleteCharacter(id);
-        showCharacterList(req, res);
+        res.sendStatus(200);
     }
     catch(error) {
         res.status(500).send(error.msg);
