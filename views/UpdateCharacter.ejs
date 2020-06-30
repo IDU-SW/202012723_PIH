@@ -2,6 +2,8 @@
 <head>
     <meta charset="UTF-8" />
     <h1>LOL Character Add Form</h1>
+
+    <style> #btnUpdate{ border-top-left-radius: 5px; border-bottom-left-radius: 5px; margin-right:-4px; } #btnCancle{ border-top-right-radius: 5px; border-bottom-right-radius: 5px; margin-left:-3px; } #btnGroup input{ border: 1px solid rgb(0, 85, 119); background-color: rgba(0,0,0,0); color: rgb(0, 85, 119); padding: 5px; } #btnGroup input:hover{ color:white; background-color: rgb(0, 85, 119); } </style>
 </head>
 <body>
     <br>
@@ -17,8 +19,10 @@
         이미지 :
         <input type="file" name="thumbnail" value="<%= image.image %>"> <br>
 
-        <input type="submit" value="수정">
-        <input type="button" value="취소" onclick="location.href='http://localhost:3000/LOLCharacter/<%= data.id %>'">
+        <div id="btnGroup">
+            <input type="submit" id="btnUpdate" value="수정">
+            <input type="button" id="btnCancle" value="취소" onclick="location.href='http://3.34.187.169:3000/LOLCharacter/<%= data.id %>'">
+        </div>
     </form>
 </body>
 </html>

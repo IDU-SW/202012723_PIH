@@ -1,7 +1,8 @@
 const fs = require('fs');
+var dbConfig = require('./dbconfig');
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('LOLCharacter', 'dev', 'secret', {
-    dialect: 'mysql', host: '127.0.0.1'
+const sequelize = new Sequelize(dbConfig.database, dbConfig.user, dbConfig.password, {
+    dialect: 'mysql', host: dbConfig.host, port: 3000
 });
 
 class Characters extends Sequelize.Model {}
@@ -29,6 +30,8 @@ CharacterImage.init({
     fk_character_id: Sequelize.INTEGER,
     image: Sequelize.STRING
 }, {tableName:'characterImage', sequelize, timestamps: false});
+
+
 
 class LOLCharacter {
     constructor() {

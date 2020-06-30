@@ -111,3 +111,6 @@ temp/
 # End of https://www.gitignore.io/api/node
 
 node_modules
+
+aws_config.json
+dbconfig.js

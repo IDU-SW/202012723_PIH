@@ -1,0 +1,39 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Change User Thumbnail</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+    <style> #btnSave{ border-top-left-radius: 5px; border-bottom-left-radius: 5px; margin-right:-4px; } #btnCancle{ border-top-right-radius: 5px; border-bottom-right-radius: 5px; margin-left:-3px; } #btnGroup input{ border: 1px solid rgb(0, 85, 119); background-color: rgba(0,0,0,0); color: rgb(0, 85, 119); padding: 5px; } #btnGroup input:hover{ color:white; background-color: rgb(0, 85, 119); } </style>
+</head>
+<body>
+    <form id="form" name="form" method="POST" action="../UserProfile" enctype="multipart/form-data">
+        변경할 이미지 : 
+        <input type="hidden" id="userToken" name="userToken" value="Test">
+        <input type="file" name="thumbnail"> <br>
+        <div id="btnGroup">
+            <input type="submit" id="btnSave" value="저장" onclick="OnClickSave()">
+            <input type="submit" id="btnCancle" value="취소" onclick="OnClickCancle()">
+        </div>
+    </form>
+
+    <script>
+         $(document).ready(function () {
+             const jwt = window.sessionStorage.getItem("token");
+             document.getElementById('userToken').value = jwt;
+         });
+
+         function OnClickSave() {
+             const form = document.getElementById('form');
+             form.action = "../UpdateUserProfile";
+             form.enctype="multipart/form-data";
+         }
+
+         function OnClickCancle() {
+             const form = document.getElementById('form');
+             form.action = "../UserProfile";
+             form.enctype="application/www-form-urlencoded";
+         }
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <h1>User Profile</h1>
+
+    <style> #btnList{ border-top-left-radius: 5px; border-bottom-left-radius: 5px; margin-right:-4px; } #btnUpdate{ border-top-right-radius: 5px; border-bottom-right-radius: 5px; margin-left:-3px; } #btnGroup input{ border: 1px solid rgb(0, 85, 119); background-color: rgba(0,0,0,0); color: rgb(0, 85, 119); padding: 5px; } #btnGroup input:hover{ color:white; background-color: rgb(0, 85, 119); } </style>
+</head>
+<body>
+    <form>
+        <ul>
+                <li>
+                    아이디 : <%= data.id %> 
+                </li>
+                <li>
+                    이름 : <%= data.name %> 
+                </li>
+                <li>
+                    프로필 사진 :<br>
+                    <img src="<%= image %>" />
+                </li>
+        </ul>
+        <br>
+        <div id="btnGroup">
+            <input type="button" id="btnList" value="목록보기" onclick="location.href='http://3.34.187.169:3000/LOLCharacter'">
+            <input type="button" id="btnUpdate" value="썸네일수정하기" onclick="location.href='http://3.34.187.169:3000/UpdateUserProfileForm'">
+        </div>
+    </form>  
+</body>
